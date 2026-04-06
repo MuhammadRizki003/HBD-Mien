@@ -1,8 +1,12 @@
 // Animation Timeline
+import 'regenerator-runtime';
+import '../style/style.css';
 const animationTimeline = () => {
   // Spit chars that needs to be animated individually
   const textBoxChars = document.getElementsByClassName("hbd-chatbox")[0];
   const hbd = document.getElementsByClassName("wish-hbd")[0];
+  const h5 = document.querySelector(".wish h5");
+
 
   textBoxChars.innerHTML = `<span>${textBoxChars.innerHTML
     .split("")
@@ -15,7 +19,7 @@ const animationTimeline = () => {
       return char;
     })
     .join("</span><span>")}</span>`;
-
+  const music = document.getElementById("bg-music");
   const ideaTextTrans = {
     opacity: 0,
     y: -20,
@@ -133,7 +137,7 @@ const animationTimeline = () => {
       "+=0.5"
     )
     .to(
-      ".idea-5 span",
+      ".idea-5 .smy",
       0.7,
       {
         rotation: 90,
@@ -172,7 +176,18 @@ const animationTimeline = () => {
       },
       0.2,
       "+=0.5"
-    )
+    ).add(() => {
+      music.currentTime = 14;
+      music.volume = 0; // mulai dari mute
+      music.play();
+
+      // fade in volume
+      gsap.to(music, {
+        volume: 0.5, // target volume
+        duration: 3, // durasi fade (detik)
+        ease: "power1.inOut"
+      });
+    })
     .staggerFromTo(
       ".baloons img",
       2.5,
@@ -199,11 +214,21 @@ const animationTimeline = () => {
         onComplete: () => {
           // mulai goyang-goyang setelah masuk
           gsap.delayedCall(7, () => {
+            // goyang
             gsap.to(".mien-img", {
-              rotation: 3,
-              x: "+=1.5",
-              y: "+=1.5",
+              rotation: 2,
+              x: "+=1",
+              y: "+=1",
               duration: 0.2,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut"
+            });
+
+            // zoom in-out (lebih halus)
+            gsap.to(".mien-img", {
+              scale: 0.89,
+              duration: 1.2,
               repeat: -1,
               yoyo: true,
               ease: "sine.inOut"
@@ -237,6 +262,7 @@ const animationTimeline = () => {
         scale: 1,
         rotationY: 0,
         color: "#ff69b4",
+        textShadow: "0px 0px 8px black",
         ease: Expo.easeOut
       },
       0.1,
@@ -248,19 +274,169 @@ const animationTimeline = () => {
       {
         opacity: 0,
         y: 10,
-        skewX: "-15deg"
+        skewX: "-15deg",
+        onComplete: () => {
+          function createFlakes() {
+            const container = document.querySelector(".flakes");
+
+            for (let i = 0; i < 60; i++) {
+              const flake = document.createElement("div");
+              flake.classList.add("flake");
+
+              // 🎨 warna random
+              flake.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+
+              // 📏 ukuran random biar variatif
+              flake.style.width = 4 + Math.random() * 3 + "px";
+              flake.style.height = 20 + Math.random() * 12 + "px";
+
+              // posisi awal
+              flake.style.left = Math.random() * 100 + "vw";
+
+              container.appendChild(flake);
+
+              // 🌀 zig-zag pakai timeline
+              const tl = gsap.timeline({
+                repeat: -1,
+                delay: Math.random() * 3 // 👈 biar gak barengan
+              });
+
+              // jatuh utama
+              tl.fromTo(
+                flake,
+                {
+                  y: -50,
+                  rotation: Math.random() * 360
+                },
+                {
+                  y: "100vh",
+                  duration: 4 + Math.random() * 3,
+                  ease: "none"
+                }
+              );
+
+              // goyang kanan kiri (zig-zag random)
+              gsap.to(flake, {
+                x: "+=" + (Math.random() * 100 - 50),
+                duration: 0.5 + Math.random(), // beda-beda biar gak sinkron
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                delay: Math.random() * 2
+              });
+
+              // muter dikit biar hidup
+              gsap.to(flake, {
+                rotation: "+=" + (Math.random() * 360),
+                duration: 2 + Math.random() * 2,
+                repeat: -1,
+                ease: "none"
+              });
+            }
+          }
+          gsap.delayedCall(2, () => {
+            createFlakes();
+          })
+        }
       },
       "party"
-    )
+    ).add(() => {
+      gsap.to(".wish h5", {
+        duration: 0.8,
+        scale: 1.1,
+        color: "hsl(random(0,360), 80%, 60%)",
+        scale: 0.89,
+        duration: 1.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+      gsap.to(".wish-hbd span", {
+        y: -12,
+        duration: 1.5,
+        ease: "power1.inOut",
+        scale: 1.1,
+        color: "hsl(random(0,360), 80%, 60%)",
+        stagger: {
+          each: 0.15,
+          repeat: -1,
+          yoyo: true
+        }
+      });
+    }).add(() => {
+      function confettiBurst(x, y) {
+        const container = document.createElement("div");
+        container.classList.add("confetti-container");
+        document.body.appendChild(container);
+
+        for (let i = 0; i < 60; i++) {
+          const confetti = document.createElement("div");
+          confetti.classList.add("confetti");
+
+          confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+
+          // posisi awal dari titik (x, y)
+          confetti.style.left = x + "px";
+          confetti.style.top = y + "px";
+
+          container.appendChild(confetti);
+
+          const angle = Math.random() * Math.PI * 2;
+          const distance = 200 + Math.random() * 300;
+
+          gsap.to(confetti, {
+            x: Math.cos(angle) * distance,
+            y: Math.sin(angle) * distance,
+            rotation: Math.random() * 720,
+            duration: 1.2,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.to(confetti, {
+                y: "+=800",
+                x: "+=" + (Math.random() * 200 - 100),
+                duration: 3,
+                ease: "none"
+              });
+            }
+          });
+        }
+        setTimeout(() => container.remove(), 5000);
+      }
+      function randomBurst() {
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * window.innerHeight * 0.5; // biar di atas layar
+        confettiBurst(x, y);
+      }
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          randomBurst();
+        }, i * 550); // delay antar burst
+      }
+      setTimeout(() => {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            randomBurst();
+          }, i * 550); // delay antar burst
+        }
+      }, 4000);
+      setTimeout(() => {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            randomBurst();
+          }, i * 550); // delay antar burst
+        }
+      }, 8000); // delay antar burst
+    }, "party")
     .staggerTo(
       ".eight svg",
-      1.5,
+      2,
       {
         visibility: "visible",
         opacity: 0,
-        scale: 80,
+        scale: 15,
         repeat: 2,
-        repeatDelay: 0.5
+        repeatDelay: 0.5,
+        ease: "power1.out"
       },
       0.3
     )
@@ -308,6 +484,7 @@ const fetchData = () => {
     });
 };
 
+import Swal from 'sweetalert2'
 
 
 // resolveFetch().then(animationTimeline());
@@ -317,16 +494,16 @@ window.addEventListener("load", () => {
     title: "",
     width: "auto",
     padding: '10px',
-    text: "Udah Siap?",
+    text: "Udah Nyalain Volume?",
     confirmButtonColor: "#3085d6",
-    confirmButtonText: "Siap",
+    confirmButtonText: "Udah",
   }).then((result) => {
     if (result.isConfirmed) {
       Swal.fire({
         title: "",
         width: "auto",
         padding: '10px',
-        text: "Yakin?",
+        text: "Mulai?",
         icon: "",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "Mulai",
@@ -335,7 +512,7 @@ window.addEventListener("load", () => {
           setTimeout(() => {
             animationTimeline();
           }, 300);
-        } 
+        }
       });
     }
   });

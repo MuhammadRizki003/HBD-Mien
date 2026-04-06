@@ -16,6 +16,30 @@ body {
   background-color: #0f0f0f;
 }
 
+.flakes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 96969;
+}
+
+.flake {
+  position: absolute;
+  width: 8px;
+  height: 18px;
+  background: red;
+  opacity: 1;
+  border-radius: 2px;
+}
+
+.wish h5 span {
+  display: inline-block;
+}
+
 .container {
   padding-left: 10px;
   padding-right: 10px;
@@ -26,36 +50,24 @@ body {
   visibility: hidden;
   position: relative;
   overflow: hidden;
+  z-index: 9999;
 }
 
-.kue-ultah {
-  width: 80px;
-  height: 80px;
+.confetti-container {
   position: fixed;
-  /* supaya selalu di pojok layar */
-  bottom: 50px;
-  /* jarak dari bawah */
-  right: 20px;
-  /* jarak dari kanan */
-  transform-origin: center bottom;
-  animation: goyang 1s infinite alternate ease-in-out;
-  cursor: pointer;
-  /* opsional, biar bisa diklik */
-  transform: rotate(-10deg);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
 }
 
-@keyframes goyang {
-  0% {
-    transform: rotate(-10deg);
-  }
-
-  50% {
-    transform: rotate(10deg);
-  }
-
-  100% {
-    transform: rotate(-10deg);
-  }
+.confetti {
+  position: absolute;
+  width: 7px;
+  height: 19px;
+  border-radius: 2px;
 }
 
 .mien-img {
