@@ -5,15 +5,19 @@ html {
 body {
   margin: 0;
   font-family: "Work Sans", sans-serif;
+
   background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(48, 44, 44, 0.5)),
     url('../img/kertas.webp');
-  ;
   background-size: cover;
-  /* biar menutupi layar */
   background-repeat: no-repeat;
-  /* agar tidak berulang */
   background-position: center;
   background-color: #0f0f0f;
+
+  /* ✅ BIKIN CENTER */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 .flakes {
@@ -73,7 +77,7 @@ body {
 .mien-img {
   width: 100%;
   /* menyesuaikan parent container */
-  max-width: 400px;
+  max-width: 600px;
   /* opsional: maksimal lebar */
   height: auto;
   /* supaya proporsional */
@@ -113,6 +117,34 @@ body {
   margin-bottom: 10px;
   max-width: 100%;
   height: auto;
+}
+
+section#dance {
+  display: none;
+}
+
+.dance-wrapper#wrap {
+  position: absolute;
+  bottom: 50px;
+  /* jarak dari bawah */
+  width: 100%;
+  z-index: 999999;
+  height: fit-content;
+}
+
+.dance-container {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  /* kiri - tengah - kanan */
+  align-items: end;
+  /* rata tengah vertikal */
+  width: 100%;
+  align-items: flex-end;
+}
+
+.dance-container img {
+  width: 125px;
 }
 
 .two {
@@ -169,8 +201,19 @@ body {
   font-size: 4rem;
 }
 
+.idea-69 span.text,.idea-69 .text-inner {
+  font-size: 3rem;
+}
+
+.idea-69 .text-inner,
+.idea-69 .smy img {
+  opacity: 0;
+}
+
 .idea-5 span,
 .idea-6 span,
+.idea-69 .smy,
+.idea-69 span,
 .wish-hbd span {
   display: inline-block;
 }
@@ -185,7 +228,7 @@ body {
 
 .six img {
   display: inline-block;
-  max-width: 100%;
+  /* max-width: 100%; */
   height: auto;
 }
 

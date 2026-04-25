@@ -6,7 +6,78 @@ const animationTimeline = () => {
   const textBoxChars = document.getElementsByClassName("hbd-chatbox")[0];
   const hbd = document.getElementsByClassName("wish-hbd")[0];
   const h5 = document.querySelector(".wish h5");
+  let flakeTweens = [];
+  let flakeElements = [];
+  function createFlakes() {
+    const container = document.querySelector(".flakes");
+    for (let i = 0; i < 60; i++) {
+      const flake = document.createElement("div");
+      flake.classList.add("flake");
+      flake.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
+      flake.style.width = 4 + Math.random() * 3 + "px";
+      flake.style.height = 20 + Math.random() * 12 + "px";
+      flake.style.left = Math.random() * 100 + "vw";
+      container.appendChild(flake);
+      flakeElements.push(flake); // simpan element
+      // timeline jatuh
+      const tl = gsap.timeline({
+        repeat: -1,
+        delay: Math.random() * 3
+      });
 
+      tl.fromTo(
+        flake,
+        {
+          y: -50,
+          rotation: Math.random() * 360
+        },
+        {
+          y: "100vh",
+          duration: 4 + Math.random() * 3,
+          ease: "none"
+        }
+      );
+
+      flakeTweens.push(tl);
+
+      // zig-zag
+      const zigzag = gsap.to(flake, {
+        x: "+=" + (Math.random() * 100 - 50),
+        duration: 0.5 + Math.random(),
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+        delay: Math.random() * 2
+      });
+
+      flakeTweens.push(zigzag);
+
+      // rotation
+      const rotate = gsap.to(flake, {
+        rotation: "+=" + (Math.random() * 360),
+        duration: 2 + Math.random() * 2,
+        repeat: -1,
+        ease: "none"
+      });
+
+      flakeTweens.push(rotate);
+    }
+  }
+  function stopFlakes() {
+    // stop semua animasi
+    flakeTweens.forEach(t => t.kill());
+
+    // fade out biar halus
+    gsap.to(flakeElements, {
+      opacity: 0,
+      duration: 1,
+      onComplete: () => {
+        flakeElements.forEach(el => el.remove());
+        flakeElements = [];
+        flakeTweens = [];
+      }
+    });
+  }
 
   textBoxChars.innerHTML = `<span>${textBoxChars.innerHTML
     .split("")
@@ -120,31 +191,57 @@ const animationTimeline = () => {
       backgroundColor: "#ff69b4",
       color: "#fff"
     })
-    .to(".idea-3", 0.7, ideaTextTransLeave, "+=1.2")
+    .to(".idea-3", 0.7, ideaTextTransLeave, "+=0.8")
     .from(".idea-4", 0.4, ideaTextTrans)
     .to(".idea-4", 0.4, ideaTextTransLeave, "+=0.8")
     .from(
       ".idea-5",
-      0.7,
       {
+        duration: 0.7,
         rotationX: 15,
         rotationZ: -10,
         skewY: "-5deg",
         y: 50,
         z: 10,
         opacity: 0
-      },
-      "+=0.5"
+      }
     )
-    .to(
-      ".idea-5 .smy",
-      0.7,
+
+    // jeda 0.2 detik
+    .to(".idea-5 strong", {
+      duration: 0.2,
+      scale: 1.2,
+      x: 10,
+      backgroundColor: "#033768",
+      color: "#fff",
+      padding: "2px 25px",
+      fontStyle: "italic",
+      borderRadius: "5px"
+    }, "+=0.1")
+
+    // jeda 0.8 detik setelah strong selesai
+    .fromTo(".idea-5 .smy img",
       {
-        rotation: 90,
-        x: 8
+        opacity: 0,
+        scale: 0,
+        y: 0
       },
-      "+=0.4"
+      {
+        opacity: 1,
+        scale: 5,
+        y: -100,
+        duration: 1,
+        ease: "back.out(3)"
+      },
+      "+=0.7"
     )
+    .to(".idea-5 .smy", {
+      x: "+=5",
+      y: "+=5",
+      repeat: 5,
+      yoyo: true,
+      duration: 0.1
+    })
     .to(
       ".idea-5",
       0.7,
@@ -152,7 +249,7 @@ const animationTimeline = () => {
         scale: 0.2,
         opacity: 0
       },
-      "+=2"
+      "+=0.5"
     )
     .staggerFrom(
       ".idea-6 span",
@@ -183,7 +280,7 @@ const animationTimeline = () => {
 
       // fade in volume
       gsap.to(music, {
-        volume: 0.5, // target volume
+        volume: 0.8, // target volume
         duration: 3, // durasi fade (detik)
         ease: "power1.inOut"
       });
@@ -213,6 +310,18 @@ const animationTimeline = () => {
         duration: 1.5,
         onComplete: () => {
           // mulai goyang-goyang setelah masuk
+          gsap.delayedCall(6, () => {
+            gsap.set("#dance", { display: "block" });
+            // animasi muncul + naik dikit
+            gsap.to("#dance img", {
+              y: -20,
+              duration: 1,
+              repeat: -1,
+              yoyo: true,
+              ease: "sine.inOut",
+              stagger: 0.2
+            });
+          })
           gsap.delayedCall(7, () => {
             // goyang
             gsap.to(".mien-img", {
@@ -276,64 +385,6 @@ const animationTimeline = () => {
         y: 10,
         skewX: "-15deg",
         onComplete: () => {
-          function createFlakes() {
-            const container = document.querySelector(".flakes");
-
-            for (let i = 0; i < 60; i++) {
-              const flake = document.createElement("div");
-              flake.classList.add("flake");
-
-              // 🎨 warna random
-              flake.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
-
-              // 📏 ukuran random biar variatif
-              flake.style.width = 4 + Math.random() * 3 + "px";
-              flake.style.height = 20 + Math.random() * 12 + "px";
-
-              // posisi awal
-              flake.style.left = Math.random() * 100 + "vw";
-
-              container.appendChild(flake);
-
-              // 🌀 zig-zag pakai timeline
-              const tl = gsap.timeline({
-                repeat: -1,
-                delay: Math.random() * 3 // 👈 biar gak barengan
-              });
-
-              // jatuh utama
-              tl.fromTo(
-                flake,
-                {
-                  y: -50,
-                  rotation: Math.random() * 360
-                },
-                {
-                  y: "100vh",
-                  duration: 4 + Math.random() * 3,
-                  ease: "none"
-                }
-              );
-
-              // goyang kanan kiri (zig-zag random)
-              gsap.to(flake, {
-                x: "+=" + (Math.random() * 100 - 50),
-                duration: 0.5 + Math.random(), // beda-beda biar gak sinkron
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut",
-                delay: Math.random() * 2
-              });
-
-              // muter dikit biar hidup
-              gsap.to(flake, {
-                rotation: "+=" + (Math.random() * 360),
-                duration: 2 + Math.random() * 2,
-                repeat: -1,
-                ease: "none"
-              });
-            }
-          }
           gsap.delayedCall(2, () => {
             createFlakes();
           })
@@ -368,22 +419,16 @@ const animationTimeline = () => {
         const container = document.createElement("div");
         container.classList.add("confetti-container");
         document.body.appendChild(container);
-
         for (let i = 0; i < 60; i++) {
           const confetti = document.createElement("div");
           confetti.classList.add("confetti");
-
           confetti.style.background = `hsl(${Math.random() * 360}, 80%, 60%)`;
-
           // posisi awal dari titik (x, y)
           confetti.style.left = x + "px";
           confetti.style.top = y + "px";
-
           container.appendChild(confetti);
-
           const angle = Math.random() * Math.PI * 2;
           const distance = 200 + Math.random() * 300;
-
           gsap.to(confetti, {
             x: Math.cos(angle) * distance,
             y: Math.sin(angle) * distance,
@@ -407,25 +452,35 @@ const animationTimeline = () => {
         const y = Math.random() * window.innerHeight * 0.5; // biar di atas layar
         confettiBurst(x, y);
       }
-      for (let i = 0; i < 5; i++) {
+      setTimeout(() => {
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            randomBurst();
+          }, i * 550); 
+        }
         setTimeout(() => {
-          randomBurst();
-        }, i * 550); // delay antar burst
-      }
-      setTimeout(() => {
-        for (let i = 0; i < 5; i++) {
-          setTimeout(() => {
-            randomBurst();
-          }, i * 550); // delay antar burst
-        }
-      }, 4000);
-      setTimeout(() => {
-        for (let i = 0; i < 5; i++) {
-          setTimeout(() => {
-            randomBurst();
-          }, i * 550); // delay antar burst
-        }
-      }, 8000); // delay antar burst
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              randomBurst();
+            }, i * 550); 
+          }
+        }, 4000);
+        setTimeout(() => {
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              randomBurst();
+            }, i * 550); 
+          }
+        }, 8000); 
+        setTimeout(() => {
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              randomBurst();
+            }, i * 550); 
+          }
+        }, 12000); 
+      }, 1500);
+
     }, "party")
     .staggerTo(
       ".eight svg",
@@ -434,7 +489,7 @@ const animationTimeline = () => {
         visibility: "visible",
         opacity: 0,
         scale: 15,
-        repeat: 2,
+        repeat: 3,
         repeatDelay: 0.5,
         ease: "power1.out"
       },
@@ -444,7 +499,7 @@ const animationTimeline = () => {
       opacity: 0,
       y: 30,
       zIndex: "-1"
-    })
+    }).add(() => { stopFlakes() })
     .staggerFrom(".nine p", 1, ideaTextTrans, 1.2)
     .to(
       ".last-smile",
@@ -458,10 +513,9 @@ const animationTimeline = () => {
   // tl.seek("currentStep");
   // tl.timeScale(2);
 
-  // Restart Animation on click
-  const replyBtn = document.getElementById("replay");
-  replyBtn.addEventListener("click", () => {
-    tl.restart();
+  const wame = document.getElementById("wame");
+  wame.addEventListener("click", () => {
+    window.open("https://wa.me/+6289643190976?text=Mau ngetik apa hayo? :3");
   });
 };
 
@@ -490,31 +544,55 @@ import Swal from 'sweetalert2'
 // resolveFetch().then(animationTimeline());
 // trigger to play music in the background with sweetalert
 window.addEventListener("load", () => {
-  Swal.fire({
-    title: "",
-    width: "auto",
-    padding: '10px',
-    text: "Udah Nyalain Volume?",
-    confirmButtonColor: "#3085d6",
-    confirmButtonText: "Udah",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: "",
-        width: "auto",
-        padding: '10px',
-        text: "Mulai?",
-        icon: "",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Mulai",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setTimeout(() => {
-            animationTimeline();
-          }, 300);
-        }
-      });
-    }
-  });
-
+  const loader = document.getElementById("loader");
+  const content = document.getElementById("content");
+  loader.style.display = "none";
+  content.style.display = "block";
+  function startSwal() {
+    Swal.fire({
+      title: "",
+      width: "auto",
+      padding: '10px',
+      text: "Udah Nyalain Volume?",
+      confirmButtonText: "Udah",
+      cancelButtonText: "Belum",
+      showCancelButton: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "",
+          width: "auto",
+          padding: '10px',
+          text: "Mulai?",
+          confirmButtonText: "Mulai",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setTimeout(() => {
+              animationTimeline();
+            }, 300);
+          }
+        });
+      } else {
+        Swal.fire({
+          imageUrl: "../img/hmph.gif",
+          imageHeight: "120px",
+          text: "Nyalain dlu volumenya lah weh!",
+          width: "auto",
+          padding: '10px',
+          confirmButtonText: "Siap ku nyalain",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            startSwal(); // 🔁 balik ke awal
+          }
+        });
+      }
+    });
+  }
+  startSwal()
 });
